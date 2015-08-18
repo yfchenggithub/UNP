@@ -1,0 +1,24 @@
+chengyf@fnii:~/UNP$ !gcc
+gcc -g -o SO_RCVBUF SO_RCVBUF.c 
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 1                   
+buf_size 2240
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 10
+buf_size 2240
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 100
+buf_size 2240
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 1000
+buf_size 2240
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 10000
+buf_size 20000
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 100000
+buf_size 200000
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 1000000
+buf_size 327680
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 10000000
+buf_size 327680
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 10000000
+buf_size 327680
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 100000000
+buf_size 327680
+chengyf@fnii:~/UNP$ ./SO_RCVBUF 1000000000
+buf_size 327680
