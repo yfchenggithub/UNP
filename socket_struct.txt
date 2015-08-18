@@ -1,0 +1,61 @@
+struct sockaddr
+{
+	unsigned short sa_family; /*addressfamily,AF_xxx*/
+	char sa_data[14];	  /*14bytesofprotocoladdress*/
+};
+
+struct sockaddr_in
+ 
+{
+ 
+	short sin_family;/*Addressfamily一般来说AF_INET（地址族）PF_INET（协议族）*/
+	 
+	unsigned short sin_port;/*Portnumber(必须要采用网络数据格式,普通数字可以用htons()函数转换成网络数据格式的数字)*/
+	 
+	struct in_addr sin_addr;/*Internetaddress*/
+	 
+	unsigned char sin_zero[8];/*Samesizeasstructsockaddr没有实际意义,只是为了　跟SOCKADDR结构在内存中对齐*/
+	 
+};
+
+typedef struct in_addr
+ 
+{
+ 
+	unsigned long s_addr;
+ 
+};
+
+struct sockaddr_un 
+{
+       sa_family_t sun_family;               /* AF_UNIX */
+       char        sun_path[108];            /* pathname */
+};
+
+struct sockaddr_dl {
+	u_char	sdl_len;	/* Total length of sockaddr */
+	u_char	sdl_family;	/* AF_DLI */
+	u_short	sdl_index;	/* if != 0, system given index for interface */
+	u_char	sdl_type;	/* interface type */
+	u_char	sdl_nlen;	/* interface name length, no trailing 0 reqd. */
+	u_char	sdl_alen;	/* link level address length */
+	u_char	sdl_slen;	/* link layer selector length */
+	char	sdl_data[12];	/* minimum work area, can be larger;
+				   contains both if name and ll address */
+};
+
+struct sockaddr_in6 {
+    sa_family_t     sin6_family;   /* AF_INET6 */
+    in_port_t       sin6_port;     /* port number */
+    uint32_t        sin6_flowinfo; /* IPv6 flow information */
+    struct in6_addr sin6_addr;     /* IPv6 address */
+    uint32_t        sin6_scope_id; /* Scope ID (new in 2.4) */
+};
+
+struct in6_addr {
+    unsigned char   s6_addr[16];   /* IPv6 address */
+};
+
+
+
+
