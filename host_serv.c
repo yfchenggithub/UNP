@@ -40,11 +40,6 @@ void dump_addr_info(struct addrinfo* _addr)
 	}
 }
 
-int tcp_connect(const char* host_name, const char* service)
-{
-		
-}
-
 int main(int argc, char** argv)
 {
 	if (3 != argc)
@@ -62,5 +57,6 @@ int main(int argc, char** argv)
 		return -1;
 	}
 	dump_addr_info(_addrinfo);
+	freeaddrinfo(_addrinfo);
 	return 0;
 }
