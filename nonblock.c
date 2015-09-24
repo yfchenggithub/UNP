@@ -52,7 +52,7 @@ void str_cli(FILE* fp, int sockfd)
 
 	flags = fcntl(sockfd, F_GETFL, 0);
 	fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-
+	
 	char* toiptr;
 	char* tooptr;
 	char* friptr;
@@ -63,7 +63,6 @@ void str_cli(FILE* fp, int sockfd)
 	
 	int maxfd;
 	maxfd = max(fileno(fp), sockfd) + 1;
-	printf("maxfd %d\n", maxfd);
 	
 	fd_set rset;
 	fd_set wset;
@@ -74,24 +73,28 @@ void str_cli(FILE* fp, int sockfd)
 		/*标准输入的缓冲区有空间*/
 		if ((0 == stdineof) && (toiptr < &to[MAXLINE]))
 		{
+			printf("%d to readset\n", STDIN_FILENO);
 			FD_SET(STDIN_FILENO, &rset);
 		}
 		
 		/*从套接口里面读取数据 因为缓冲区里面还有空间*/
 		if (friptr < &fr[MAXLINE])
 		{
+			printf("%d to readset\n", sockfd);
 			FD_SET(sockfd, &rset);
 		}
 		
 		/*还有数据没有发送到套接字中, 因为标准输入的读取速度快于套接字的接收速度*/
 		if (tooptr < toiptr)
 		{
+			printf("%d to writeset\n", sockfd);
 			FD_SET(sockfd, &wset);
 		}
 		
 		/*还有数据发送到标准输出中， 套接字的读取速度大于标准输出的接收速度*/
 		if (froptr < friptr)
 		{
+			printf("%d to writeset\n", STDOUT_FILENO);
 			FD_SET(STDOUT_FILENO, &wset);
 		}
 		
@@ -100,7 +103,6 @@ void str_cli(FILE* fp, int sockfd)
 		
 		if (ready_num < 0)
 		{
-			printf("select wrong\n");
 			perror("select ");
 			continue;
 		}
@@ -114,6 +116,7 @@ void str_cli(FILE* fp, int sockfd)
 		int nread_bytes;
 		if (FD_ISSET(STDIN_FILENO, &rset))	
 		{
+			printf("read on %d\n", STDIN_FILENO);
 			int left_space = &to[MAXLINE] - toiptr;
 			if ((nread_bytes = read(STDIN_FILENO, toiptr, left_space)) < 0)
 			{
@@ -125,7 +128,7 @@ void str_cli(FILE* fp, int sockfd)
 			
 			if (0 == nread_bytes)
 			{
-				fprintf(stderr, "%s: eof on stdin\n", gf_time());
+				fprintf(stderr, "%s: eof on %d\n", gf_time(), STDIN_FILENO);
 				stdineof = 1;
 				/*从标准输入读取的数据 已经全部发送给套掊字*/
 				if (toiptr == tooptr)
@@ -144,6 +147,7 @@ void str_cli(FILE* fp, int sockfd)
 		
 		if (FD_ISSET(sockfd, &rset))
 		{
+			printf("read on %d\n", sockfd);
 			int read_space = &fr[MAXLINE] - friptr;
 			if ((nread_bytes = read(sockfd, friptr, read_space)) < 0)
 			{
@@ -151,6 +155,7 @@ void str_cli(FILE* fp, int sockfd)
 				{
 					printf("select ready but read error\n");
 				}
+				continue;
 			}
 			
 			if (0 == nread_bytes)
@@ -167,7 +172,7 @@ void str_cli(FILE* fp, int sockfd)
 			}
 			else
 			{
-				fprintf(stderr, "%s: read %d bytes from server\n", gf_time(), nread_bytes);
+				fprintf(stderr, "%s: read %d bytes from %d\n", gf_time(), nread_bytes, sockfd);
 				friptr += nread_bytes;
 				FD_SET(STDOUT_FILENO, &wset);
 			}
@@ -177,6 +182,7 @@ void str_cli(FILE* fp, int sockfd)
 		int nwrite_space;
 		if (FD_ISSET(STDOUT_FILENO, &wset) && ((nwrite_space = friptr - froptr) > 0))
 		{
+			printf("write on %d\n", STDOUT_FILENO);
 			if ((nwrite_bytes = write(STDOUT_FILENO, froptr, nwrite_space)) < 0)
 			{
 				if (EWOULDBLOCK != errno)
@@ -198,6 +204,7 @@ void str_cli(FILE* fp, int sockfd)
 
 		if (FD_ISSET(sockfd, &wset) && ((toiptr - tooptr) > 0))
 		{
+			printf("write on %d\n", sockfd);
 			nwrite_space = toiptr - tooptr;
 			if ((nwrite_bytes = write(sockfd, tooptr, nwrite_space)) < 0)
 			{
@@ -223,3 +230,9 @@ void str_cli(FILE* fp, int sockfd)
 	}
 }
 
+
+int main(int argc, char** argv)
+{
+	str_cli(stdin, 2);
+	return 0;
+}
